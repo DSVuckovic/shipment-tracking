@@ -11,10 +11,10 @@ VALUES (1, 'user1', 'John', 'Smith', 'johnsmith@gmail.com', 'USER', NOW(), '$2a$
 INSERT INTO shipments(id, tracking_number, created_by, description, created_at, status)
     OVERRIDING SYSTEM VALUE
 VALUES
-    (1, 'TRK-100001', 1, 'Electronics package', NOW(), 3),
-    (2, 'TRK-100002', 2, 'Books shipment', NOW(), 2),
-    (3, 'TRK-100003', 3, 'Furniture delivery', NOW(), 4),
-    (4, 'TRK-100004', 1, 'Clothing package', NOW(), 1);
+    (1, 'TRK-100001', 1, 'Electronics package', NOW(), 2),
+    (2, 'TRK-100002', 2, 'Books shipment', NOW(), 1),
+    (3, 'TRK-100003', 3, 'Furniture delivery', NOW(), 3),
+    (4, 'TRK-100004', 1, 'Clothing package', NOW(), 0);
 
 
 -- Populating status changes
@@ -22,8 +22,8 @@ INSERT INTO status_changes(
     change_id, shipment_id, changed_by, old_status, new_status, changed_at, description)
     OVERRIDING SYSTEM VALUE
 VALUES
-    (1, 1, 1, 1, 2, NOW(), 'Shipment picked up'),
-    (2, 1, 1, 2, 3, NOW(), 'Shipment delivered'),
-    (3, 2, 2, 1, 2, NOW(), 'Shipment picked up'),
-    (4, 3, 3, 1, 4, NOW(), 'Shipment cancelled');
+    (1, 1, 1, 0, 1, NOW(), 'Shipment picked up'),
+    (2, 1, 1, 1, 2, NOW(), 'Shipment delivered'),
+    (3, 2, 2, 0, 1, NOW(), 'Shipment picked up'),
+    (4, 3, 3, 0, 3, NOW(), 'Shipment cancelled');
 

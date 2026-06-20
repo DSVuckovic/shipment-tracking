@@ -46,6 +46,9 @@ public class User implements UserDetails {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+    private List<Shipment> shipments;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
