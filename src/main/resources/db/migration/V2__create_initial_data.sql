@@ -27,3 +27,7 @@ VALUES
     (3, 2, 2, 0, 1, NOW(), 'Shipment picked up'),
     (4, 3, 3, 0, 3, NOW(), 'Shipment cancelled');
 
+-- Fixing id sequence
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
+SELECT setval('shipments_id_seq', (SELECT MAX(id) FROM shipments));
+SELECT setval('status_changes_change_id_seq', (SELECT MAX(change_id) FROM status_changes));
