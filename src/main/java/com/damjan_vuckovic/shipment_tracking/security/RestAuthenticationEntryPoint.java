@@ -28,7 +28,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         res.setStatus(HttpStatus.UNAUTHORIZED.value());
-        res.getWriter().write("{\"message\": \"Cannot access this resouce without an account. Please login\"}");
+        res.getWriter().write("{\"message\": \"Cannot access this resource without an account. Please login\"}");
     }
 
 }

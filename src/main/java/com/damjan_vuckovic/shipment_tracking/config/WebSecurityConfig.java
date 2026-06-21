@@ -1,6 +1,6 @@
 package com.damjan_vuckovic.shipment_tracking.config;
 
-import com.damjan_vuckovic.shipment_tracking.security.CustomUserDetails;
+import com.damjan_vuckovic.shipment_tracking.security.CustomUserDetailsService;
 import com.damjan_vuckovic.shipment_tracking.security.JwtAuthFilter;
 import com.damjan_vuckovic.shipment_tracking.security.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import java.util.List;
 public class WebSecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final CustomUserDetails customUserDetails;
+    private final CustomUserDetailsService customUserDetailsService;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
     @Bean
@@ -46,7 +46,11 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api-docs/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -61,7 +65,7 @@ public class WebSecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetails);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
