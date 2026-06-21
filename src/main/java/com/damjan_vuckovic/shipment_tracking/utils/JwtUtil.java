@@ -13,19 +13,19 @@ import javax.crypto.SecretKey;
 
 @Service
 public class JwtUtil {
-    @Value("${jwt.secret-key}")
+    @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration-time}")
+    @Value("${jwt.expiration}")
     private long jwtExpiration;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(String username) {
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey())
