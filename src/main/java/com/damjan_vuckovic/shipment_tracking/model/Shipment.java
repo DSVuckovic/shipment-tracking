@@ -1,7 +1,7 @@
 package com.damjan_vuckovic.shipment_tracking.model;
 
 import com.damjan_vuckovic.shipment_tracking.enums.EnumShipmentStatus;
-import com.damjan_vuckovic.shipment_tracking.model.StatusChange.StatusChange;
+import com.damjan_vuckovic.shipment_tracking.model.StatusChange;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +28,7 @@ public class Shipment {
     @JoinColumn(name="created_by", nullable = false)
     private User createdBy;
 
-    @Column(length=255)
+    @Column
     private String description;
 
     @Column(name="created_at", nullable = false)

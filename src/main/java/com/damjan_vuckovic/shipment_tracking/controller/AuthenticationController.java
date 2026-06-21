@@ -1,8 +1,8 @@
 package com.damjan_vuckovic.shipment_tracking.controller;
 
-import com.damjan_vuckovic.shipment_tracking.dto.Authentication.AuthenticationRequestDto;
-import com.damjan_vuckovic.shipment_tracking.dto.Authentication.AuthenticationResponseDto;
-import com.damjan_vuckovic.shipment_tracking.dto.User.UserRegistrationDto;
+import com.damjan_vuckovic.shipment_tracking.dto.authentication.AuthenticationRequestDto;
+import com.damjan_vuckovic.shipment_tracking.dto.authentication.AuthenticationResponseDto;
+import com.damjan_vuckovic.shipment_tracking.dto.user.UserRegistrationDto;
 import com.damjan_vuckovic.shipment_tracking.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

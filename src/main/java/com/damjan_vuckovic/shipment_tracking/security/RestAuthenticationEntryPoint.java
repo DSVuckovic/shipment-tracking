@@ -20,7 +20,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse res, @NonNull AuthenticationException ex)
-            throws IOException, ServletException {
+            throws IOException {
 
         log.error("=> Access denied for method > {}  on path > {} from host > {} with ip > {}", req.getMethod(),
                 req.getRequestURI(), InetAddress.getLocalHost().getHostName(),
