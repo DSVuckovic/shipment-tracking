@@ -1,4 +1,4 @@
-package com.damjan_vuckovic.shipment_tracking.dto.Authentication;
+package com.damjan_vuckovic.shipment_tracking.dto.authentication;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

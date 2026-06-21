@@ -1,13 +1,10 @@
-package com.damjan_vuckovic.shipment_tracking.model.StatusChange;
+package com.damjan_vuckovic.shipment_tracking.model;
 
 
 import com.damjan_vuckovic.shipment_tracking.enums.EnumShipmentStatus;
-import com.damjan_vuckovic.shipment_tracking.model.Shipment;
-import com.damjan_vuckovic.shipment_tracking.model.User;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
 @Table(name = "status_changes")
@@ -18,11 +15,12 @@ import java.time.LocalDateTime;
 @Builder
 public class StatusChange {
 
-    @EmbeddedId
-    private StatusChangeId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "change_id")
+    private Long changeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("shipmentId")
     @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
 
