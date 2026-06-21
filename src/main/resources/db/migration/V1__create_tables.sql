@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS shipments
 -- STATUS CHANGE table
 CREATE TABLE IF NOT EXISTS status_changes
 (
-     change_id BIGINT GENERATED ALWAYS AS IDENTITY,
+     change_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
      shipment_id BIGINT NOT NULL,
      changed_by BIGINT NOT NULL,
      old_status INT NOT NULL,
@@ -33,6 +33,5 @@ CREATE TABLE IF NOT EXISTS status_changes
      changed_at TIMESTAMP NOT NULL DEFAULT NOW(),
      description VARCHAR(255),
      CONSTRAINT fk_status_change_shipment FOREIGN KEY (shipment_id) REFERENCES shipments(id),
-     CONSTRAINT fk_status_change_changed_by FOREIGN KEY (changed_by) REFERENCES users(id),
-     CONSTRAINT pk_status_change PRIMARY KEY (change_id, shipment_id)
+     CONSTRAINT fk_status_change_changed_by FOREIGN KEY (changed_by) REFERENCES users(id)
 );
