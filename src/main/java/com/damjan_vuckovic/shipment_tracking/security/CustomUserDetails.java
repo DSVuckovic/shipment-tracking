@@ -1,7 +1,6 @@
 package com.damjan_vuckovic.shipment_tracking.security;
 
 import com.damjan_vuckovic.shipment_tracking.model.User;
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,14 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Getter
-public class CustomUserDetails implements UserDetails {
-
-    private final User user;
-
-    public CustomUserDetails(User user) {
-        this.user = user;
-    }
+public record CustomUserDetails(User user) implements UserDetails {
 
     public Long getId() {
         return user.getId();
@@ -43,8 +35,4 @@ public class CustomUserDetails implements UserDetails {
         return user.getUsername();
     }
 
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
 }

@@ -1,10 +1,9 @@
 package com.damjan_vuckovic.shipment_tracking.service;
 
 
-import com.damjan_vuckovic.shipment_tracking.dto.Authentication.AuthenticationRequestDto;
-import com.damjan_vuckovic.shipment_tracking.dto.Authentication.AuthenticationResponseDto;
-import com.damjan_vuckovic.shipment_tracking.dto.User.UserRegistrationDto;
-import com.damjan_vuckovic.shipment_tracking.enums.EnumRole;
+import com.damjan_vuckovic.shipment_tracking.dto.authentication.AuthenticationRequestDto;
+import com.damjan_vuckovic.shipment_tracking.dto.authentication.AuthenticationResponseDto;
+import com.damjan_vuckovic.shipment_tracking.dto.user.UserRegistrationDto;
 import com.damjan_vuckovic.shipment_tracking.mapper.UserMapper;
 import com.damjan_vuckovic.shipment_tracking.model.User;
 import com.damjan_vuckovic.shipment_tracking.repository.UserRepository;
@@ -16,8 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor

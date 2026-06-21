@@ -1,4 +1,4 @@
-package com.damjan_vuckovic.shipment_tracking.dto.User;
+package com.damjan_vuckovic.shipment_tracking.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
