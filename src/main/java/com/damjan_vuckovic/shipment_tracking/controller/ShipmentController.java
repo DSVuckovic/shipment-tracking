@@ -1,15 +1,20 @@
 package com.damjan_vuckovic.shipment_tracking.controller;
 
+import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentBulkImportResultsDto;
 import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentChangeStatusDto;
 import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentCreateDto;
 import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentReadDto;
 import com.damjan_vuckovic.shipment_tracking.dto.statuschange.StatusChangeReadDto;
 import com.damjan_vuckovic.shipment_tracking.service.ShipmentService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -54,5 +59,13 @@ public class ShipmentController {
     @PreAuthorize("isAuthenticated()")
     public List<StatusChangeReadDto> getHistory(@PathVariable Long id) {
         return shipmentService.getHistory(id);
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Import shipments from CSV or Excel file")
+    public ShipmentBulkImportResultsDto importShipments(@RequestPart("file") MultipartFile file)
+            throws IOException {
+        return shipmentService.importShipments(file);
     }
 }

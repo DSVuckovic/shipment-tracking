@@ -1,8 +1,6 @@
 package com.damjan_vuckovic.shipment_tracking.service;
 
-import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentChangeStatusDto;
-import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentCreateDto;
-import com.damjan_vuckovic.shipment_tracking.dto.shipment.ShipmentReadDto;
+import com.damjan_vuckovic.shipment_tracking.dto.shipment.*;
 import com.damjan_vuckovic.shipment_tracking.dto.statuschange.StatusChangeReadDto;
 import com.damjan_vuckovic.shipment_tracking.enums.EnumShipmentStatus;
 import com.damjan_vuckovic.shipment_tracking.exception.ResourceNotFoundException;
@@ -13,13 +11,19 @@ import com.damjan_vuckovic.shipment_tracking.model.StatusChange;
 import com.damjan_vuckovic.shipment_tracking.model.User;
 import com.damjan_vuckovic.shipment_tracking.repository.ShipmentRepository;
 import com.damjan_vuckovic.shipment_tracking.repository.StatusChangeRepository;
+import com.damjan_vuckovic.shipment_tracking.service.parser.ShipmentImportParser;
 import com.damjan_vuckovic.shipment_tracking.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -31,6 +35,7 @@ public class ShipmentService {
     private final StatusChangeRepository statusChangeRepository;
     private final ShipmentMapper shipmentMapper;
     private final StatusChangeMapper statusChangeMapper;
+    private final List<ShipmentImportParser> importParsers;
 
     public ShipmentReadDto create(ShipmentCreateDto request) {
         log.info("Creating shipment with tracking number: {}", request.getTrackingNumber());
@@ -141,5 +146,83 @@ public class ShipmentService {
         return statusChangeMapper.toResponseList(
                 statusChangeRepository.findByShipmentId(shipmentId));
     }
+
+    public ShipmentBulkImportResultsDto importShipments(MultipartFile file) throws IOException {
+        String filename = file.getOriginalFilename();
+        if (filename == null) {
+            throw new IllegalArgumentException("File name is missing");
+        }
+
+        ShipmentImportParser fileParser = importParsers.stream()
+                .filter(p -> p.isValidFileExtension(filename))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                "Unsupported file type. Use CSV or Excel."));
+
+
+        List<ShipmentImportDto> requests = fileParser.parse(file);
+
+        User currentUser = Utils.getCurrentUser();
+        int successful = 0;
+        int failed = 0;
+        List<String> errors = new ArrayList<>();
+
+        for (int i = 0; i < requests.size(); i++) {
+            ShipmentImportDto request = requests.get(i);
+            int rowNumber = i + 2;
+
+            try {
+                if (request.getTrackingNumber() == null || request.getTrackingNumber().isBlank()) {
+                    throw new IllegalArgumentException("Tracking number is blank");
+                }
+                if (request.getDescription() == null || request.getDescription().isBlank()) {
+                    throw new IllegalArgumentException("Description is blank");
+                }
+                if (shipmentRepository.findByTrackingNumber(request.getTrackingNumber()).isPresent()) {
+                    throw new IllegalArgumentException("Tracking number already exists: "
+                            + request.getTrackingNumber());
+                }
+                EnumShipmentStatus parsedStatus;
+                try {
+                    parsedStatus = EnumShipmentStatus.valueOf(request.getStatus().toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Invalid status: " + request.getStatus());
+                }
+
+                LocalDateTime parsedDate;
+                try {
+                    parsedDate = request.getCreatedAt() != null && !request.getCreatedAt().isBlank()
+                            ? Utils.stringToDate(request.getCreatedAt())
+                            : LocalDateTime.now();
+                } catch (DateTimeParseException e) {
+                    throw new IllegalArgumentException("Invalid date format: " + request.getCreatedAt()
+                            + ". Expected: yyyy-MM-dd HH:mm:ss");
+                }
+
+                Shipment shipment = Shipment.builder()
+                        .trackingNumber(request.getTrackingNumber())
+                        .description(request.getDescription())
+                        .createdBy(currentUser)
+                        .createdAt(parsedDate)
+                        .status(parsedStatus)
+                        .build();
+
+                shipmentRepository.save(shipment);
+                successful++;
+
+            } catch (Exception e) {
+                failed++;
+                errors.add("Row " + rowNumber + ": " + e.getMessage());
+                log.warn("Import failed for row {}: {}", rowNumber, e.getMessage());
+            }
+        }
+
+        log.info("Import completed: {} successful, {} failed", successful, failed);
+        return ShipmentBulkImportResultsDto.builder()
+                .successful(successful)
+                .failed(failed)
+                .errors(errors)
+                .build();
+    }
+
 
 }
