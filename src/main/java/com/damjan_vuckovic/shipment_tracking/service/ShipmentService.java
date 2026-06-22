@@ -12,9 +12,13 @@ import com.damjan_vuckovic.shipment_tracking.model.User;
 import com.damjan_vuckovic.shipment_tracking.repository.ShipmentRepository;
 import com.damjan_vuckovic.shipment_tracking.repository.StatusChangeRepository;
 import com.damjan_vuckovic.shipment_tracking.service.parser.ShipmentImportParser;
+import com.damjan_vuckovic.shipment_tracking.specification.ShipmentSpecifications;
 import com.damjan_vuckovic.shipment_tracking.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,6 +72,18 @@ public class ShipmentService {
                 : shipmentRepository.findByCreatedById(currentUser.getId());
 
         return shipmentMapper.toResponseList(shipments);
+    }
+
+    public Page<ShipmentReadDto> search(String trackingNumber, Long userId, String description,
+                                        EnumShipmentStatus status, LocalDateTime createdFrom, LocalDateTime createdTo, int page, int pageSize) {
+        User currentUser = Utils.getCurrentUser();
+        boolean isAdmin = Utils.isAdmin();
+        return shipmentRepository.findAll(
+                ShipmentSpecifications.searchFilters(trackingNumber,
+                        isAdmin ? userId : currentUser.getId(), description, status, createdFrom, createdTo), PageRequest.of(page, pageSize))
+                .map(shipmentMapper::toResponse);
+
+
     }
 
     public ShipmentReadDto getById(Long id) {
